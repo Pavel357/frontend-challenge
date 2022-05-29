@@ -1,0 +1,41 @@
+.header-menu {
+    height: 64px;
+
+    background: #2196F3;
+
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.24);
+    .container {
+        .header-list {
+            display: flex;
+
+            height: 100%;
+
+            margin: 0 62px;
+            padding: 0;
+
+            font-size: 14px;
+            color: #ffffff;
+
+            list-style: none;
+            .header-list__item {
+                a {
+                    display: flex;
+                    align-items: center;
+
+                    height: 100%;
+
+                    padding: 0 20px;
+
+                    text-decoration: none;
+                    color: #ffffff;
+                    &:hover {
+                        background-color: #1E88E5;
+                    }
+                }
+            }
+            .header-list__item_active {
+                background-color: #1E88E5;
+            }
+        }
+    }
+}
