@@ -1,7 +1,7 @@
 import '../../styles/index.scss';
 import './catsList.scss';
 
-import React, { FC, ReactElement, Dispatch, useEffect, useState } from 'react';
+import { FC, ReactElement, Dispatch, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import CatsListItem from '../catsListItem/CatsListItem';
@@ -18,6 +18,7 @@ const CatsList: FC = (): ReactElement => {
     const { catsList , catsStatusLoading } = useTypedSelector(state => state.cats);
     const catsDispatch: Dispatch<CatsAction> = useDispatch();
     let [imageId, setImageId] = useState<string | number>('');
+    let [favorite, setFavorite] = useState<boolean>(false);
 
     const { request } = useHttp();
 
@@ -25,7 +26,7 @@ const CatsList: FC = (): ReactElement => {
     const page = 1;
 
     useEffect(() => {
-        catsDispatch(catsFetching());
+        catsDispatch(catsClear());
 
         request<ICatsList[]>(`https://api.thecatapi.com/v1/images/search?limit=${limit}&page=${page}&order=Desc`)
             .then(data => catsDispatch(catsFetched(data)))
@@ -69,20 +70,23 @@ const CatsList: FC = (): ReactElement => {
             image_id: imageId
         }
 
-        request<ICatId>(`https://api.thecatapi.com/v1/favourites/${id}`)
-            .then(data => {
-                request<ICatId>(`https://api.thecatapi.com/v1/favourites/${id}`, 'DELETE')
-                    .then(data => {
-                        console.log(data);
-                        catsDispatch(catDeleteFavorites(id));
-                    })
-                    .catch(() => catsDispatch(catsFetchingError()))
-            })
-            .catch(() => {
-                request<ICatId>('https://api.thecatapi.com/v1/favourites', 'POST', JSON.stringify(dataCat))
+        if (favorite) {
+            request<ICatId>(`https://api.thecatapi.com/v1/favourites/${id}`)
+                .then(data => {
+                    request<ICatId>(`https://api.thecatapi.com/v1/favourites/${id}`, 'DELETE')
+                        .then(data => {
+                            console.log(data);
+                            catsDispatch(catDeleteFavorites(id));
+                        })
+                        .catch(() => catsDispatch(catsFetchingError()))
+                })
+                .catch(() => catsDispatch(catsFetchingError()))
+        } else {
+            request<ICatId>('https://api.thecatapi.com/v1/favourites', 'POST', JSON.stringify(dataCat))
                     .then(data => console.log(data))
                     .catch(() => catsDispatch(catsFetchingError()))
-            })
+        }
+
     }
 
     const catsListFunc = (arr: ICatsList[]): ReactElement => {
@@ -116,18 +120,23 @@ const CatsList: FC = (): ReactElement => {
     const favoritesCatsMenu = document.querySelector('.header-list__item_favorites');
 
     const favoritesCats = (): void => {
-        
+        setFavorite(true);
+
         allCatsMenu?.classList.remove('header-list__item_active');
         favoritesCatsMenu?.classList.add('header-list__item_active');
 
         catsDispatch(catsClear());
 
-        request<ICatsList[]>(`https://api.thecatapi.com/v1/favourites?limit=${limit}&page=${page}&order=Desc`)
-            .then(data => catsDispatch(catsFetchedFavorites(data)))
+        request<ICatsList[]>(`https://api.thecatapi.com/v1/favourites`)
+            .then(data => {
+                console.log(data)
+                catsDispatch(catsFetchedFavorites(data))
+            })
             .catch(() => catsDispatch(catsFetchingError()))
     }
 
     const allCats = (): void => {
+        setFavorite(false);
 
         favoritesCatsMenu?.classList.remove('header-list__item_active');
         allCatsMenu?.classList.add('header-list__item_active');
@@ -139,18 +148,21 @@ const CatsList: FC = (): ReactElement => {
             .catch(() => catsDispatch(catsFetchingError()))
     }
 
+    const catsPhoto: ReactElement = (
+        <section className='cats-photo'>
+            <div className="container">
+                <ul className="cats-list">
+                    {catsListResult}
+                </ul>
+            </div>
+        </section>
+    )
+
     return (
         <>
             <HeaderMenu favoritesCats={favoritesCats} allCats={allCats} />
             { spinnerStart }
-            { errorMessage }
-            <section className='cats-photo'>
-                <div className="container">
-                    <ul className="cats-list">
-                        {catsListResult}
-                    </ul>
-                </div>
-            </section>
+            { catsStatusLoading !== 'error' ? catsPhoto :  errorMessage}
         </>
     );
 };

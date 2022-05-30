@@ -35,7 +35,8 @@ const CatsListItem: FC<ICat> = (
                     className="heart hidden"
                     onClick={catToggleFavouritesFunc}
                     onMouseOver={heartFunc}
-                    onMouseOut={heartFunc} />
+                    onMouseOut={heartFunc}
+                    />
         </li>
     );
 };

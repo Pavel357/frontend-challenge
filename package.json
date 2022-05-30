@@ -2,6 +2,7 @@
   "name": "frontend-challenge",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://pavel357.github.io/frontend-challenge/",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.2",
     "@testing-library/jest-dom": "^5.16.4",
@@ -49,6 +50,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "homepage": "https://pavel357.github.io/frontend-challenge/"
+  }
 }
