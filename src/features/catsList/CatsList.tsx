@@ -165,7 +165,7 @@ const CatsList: FC = (): ReactElement => {
 
         catsDispatch(catsClear());
 
-        request<ICatsList[]>(`https://api.thecatapi.com/v1/images/search?limit=15&page=${currentPage}&order=Desc`)
+        request<ICatsList[]>(`https://api.thecatapi.com/v1/images/search?limit=30&page=${currentPage}&order=Desc`)
             .then(data => catsDispatch(catsFetched(data)))
             .catch(() => catsDispatch(catsFetchingError()))
     }
