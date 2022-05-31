@@ -3,6 +3,8 @@ import { ICatsState, CatsAction, CatsActionType } from "../types/catsType"
 const initialState: ICatsState = {
     catsList: [],
     catsStatusLoading: 'idle',
+    currentPage: 1,
+    fetching: true 
 }
 
 const catsReducer = (state = initialState, action: CatsAction): ICatsState => {
@@ -15,8 +17,9 @@ const catsReducer = (state = initialState, action: CatsAction): ICatsState => {
         case CatsActionType.CATS_FETCHED:
             return {
                 ...state,
-                catsList: action.payload,
-                catsStatusLoading: 'idle'
+                catsList: [...state.catsList, ...action.payload],
+                catsStatusLoading: 'idle',
+                currentPage: state.currentPage + 1
             }
         case CatsActionType.CATS_FETCHED_FAVORITES:
             return {
@@ -40,6 +43,16 @@ const catsReducer = (state = initialState, action: CatsAction): ICatsState => {
                 ...state,
                 catsList: state.catsList.filter(item => item.id !== action.payload),
                 catsStatusLoading: 'idle'
+            }
+        case CatsActionType.FETCHING_TRUE:
+            return {
+                ...state,
+                fetching: true
+            }
+        case CatsActionType.FETCHING_FALSE:
+            return {
+                ...state,
+                fetching: false
             }
         default:
             return state

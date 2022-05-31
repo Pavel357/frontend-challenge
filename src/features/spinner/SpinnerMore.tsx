@@ -1,8 +1,10 @@
+import './spinner.scss';
+
 import { FC, ReactElement } from 'react';
 
 const SpinnerMore: FC = (): ReactElement => {
     return (
-        <span>... загружаем еще котиков ...</span>
+        <div className='loading-cats'>...загружаем еще котиков...</div>
     );
 };
 

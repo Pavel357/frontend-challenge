@@ -1,4 +1,4 @@
-import { ICatsList, CatsActionType, ICatsFetching, ICatsFetched, ICatsFetchingError, ICatsFetchedFavorites, ICatsClear, ICatDeleteFavorites } from "../types/catsType";
+import { ICatsList, CatsActionType, ICatsFetching, ICatsFetched, ICatsFetchingError, ICatsFetchedFavorites, ICatsClear, ICatDeleteFavorites, IFetchingTrue, IFetchingFalse } from "../types/catsType";
 
 export const catsFetching = (): ICatsFetching => {
     return {
@@ -36,5 +36,17 @@ export const catDeleteFavorites = (id: string | number): ICatDeleteFavorites => 
     return {
         type: CatsActionType.CAT_DELETE_FAVORITES,
         payload: id
+    }
+}
+
+export const fetchingTrue = (): IFetchingTrue => {
+    return {
+        type: CatsActionType.FETCHING_TRUE
+    }
+}
+
+export const fetchingFalse = (): IFetchingFalse => {
+    return {
+        type: CatsActionType.FETCHING_FALSE
     }
 }

@@ -18,6 +18,8 @@ export interface ICatId {
 export interface ICatsState {
     catsList: ICatsList[];
     catsStatusLoading: string;
+    currentPage: number;
+    fetching: boolean;
 }
 
 export enum CatsActionType {
@@ -27,6 +29,8 @@ export enum CatsActionType {
     CATS_FETCHING_ERROR = 'CATS_FETCHING_ERROR',
     CATS_CLEAR = 'CATS_CLEAR',
     CAT_DELETE_FAVORITES = 'CAT_DELETE_FAVORITES',
+    FETCHING_TRUE = 'FETCHING_TRUE',
+    FETCHING_FALSE = 'FETCHING_FALSE'
 }
 
 export interface ICatsFetching {
@@ -56,4 +60,12 @@ export interface ICatDeleteFavorites {
     payload: string | number;
 }
 
-export type CatsAction = ICatsFetching | ICatsFetched | ICatsFetchedFavorites | ICatsFetchingError | ICatsClear | ICatDeleteFavorites;
+export interface IFetchingTrue {
+    type: CatsActionType.FETCHING_TRUE;
+}
+
+export interface IFetchingFalse {
+    type: CatsActionType.FETCHING_FALSE;
+}
+
+export type CatsAction = ICatsFetching | ICatsFetched | ICatsFetchedFavorites | ICatsFetchingError | ICatsClear | ICatDeleteFavorites | IFetchingTrue | IFetchingFalse;

@@ -1,12 +1,20 @@
-import { FC, ReactElement } from 'react';
+import { FC, ReactElement, lazy, Suspense } from 'react';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
-import CatsList from '../catsList/CatsList';
+import SpinnerStart from '../spinner/SpinnerStart';
+
+const CatsList = lazy(() => import('../catsList/CatsList'))
 
 const App: FC = (): ReactElement => {
     return (
-        <>
-            <CatsList />
-        </>
+        <HelmetProvider>
+            <Helmet>
+                <title>Котики</title>
+            </Helmet>
+            <Suspense fallback={<SpinnerStart />}>
+                <CatsList />
+            </Suspense>
+        </HelmetProvider>
     );
 };
 

@@ -8,32 +8,56 @@ import CatsListItem from '../catsListItem/CatsListItem';
 import { useTypedSelector } from '../../hooks/useTypedSelector'; 
 import { CatsAction, ICatId } from '../../types/catsType';
 import { useHttp } from '../../hooks/http.hook';
-import { catsFetching, catsFetched, catsFetchedFavorites, catsFetchingError, catsClear, catDeleteFavorites } from '../../actions/catsActions';
+import { catsFetching, catsFetched, catsFetchedFavorites, catsFetchingError, catsClear, catDeleteFavorites, fetchingTrue, fetchingFalse } from '../../actions/catsActions';
 import { ICatsList } from '../../types/catsType';
 import SpinnerStart from '../spinner/SpinnerStart';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import HeaderMenu from '../headerMenu/HeaderMenu';
+import SpinnerMore from '../spinner/SpinnerMore';
+import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 
 const CatsList: FC = (): ReactElement => {
-    const { catsList , catsStatusLoading } = useTypedSelector(state => state.cats);
+    const { catsList, catsStatusLoading, currentPage, fetching } = useTypedSelector(state => state.cats);
     const catsDispatch: Dispatch<CatsAction> = useDispatch();
+
     let [imageId, setImageId] = useState<string | number>('');
     let [favorite, setFavorite] = useState<boolean>(false);
 
+    const totalCount = 10000;
+    const [loading, setLoading] = useState<ReactElement>(<span></span>);
+
     const { request } = useHttp();
 
-    const limit = 15;
-    const page = 1;
+    useEffect(() => {
+        if (fetching) {
+            if (!catsList.length) {
+                catsDispatch(catsClear());
+            }
+
+            request<ICatsList[]>(`https://api.thecatapi.com/v1/images/search?limit=30&page=${currentPage}&order=Desc`)
+                .then(data => catsDispatch(catsFetched(data)))
+                .catch(() => catsDispatch(catsFetchingError()))
+                .finally(() => catsDispatch(fetchingFalse()))
+
+            // eslint-disable-next-line
+        }
+    }, [fetching])
 
     useEffect(() => {
-        catsDispatch(catsClear());
+        document.addEventListener('scroll', scrollHandler)
 
-        request<ICatsList[]>(`https://api.thecatapi.com/v1/images/search?limit=${limit}&page=${page}&order=Desc`)
-            .then(data => catsDispatch(catsFetched(data)))
-            .catch(() => catsDispatch(catsFetchingError()))
+        return function () {
+            document.removeEventListener('scroll', scrollHandler)
+        }
+    }, [totalCount])
 
-        // eslint-disable-next-line
-    }, [])
+    const scrollHandler = (): void => {
+        if (document.body.offsetHeight - (window.scrollY + window.innerHeight) < 100 
+        && catsList.length < totalCount) {
+            catsDispatch(fetchingTrue())
+            setLoading(<SpinnerMore />)
+        }
+    } 
 
     let spinnerStart: ReactElement = <></>;
     let errorMessage: ReactElement = <></>;
@@ -75,7 +99,6 @@ const CatsList: FC = (): ReactElement => {
                 .then(data => {
                     request<ICatId>(`https://api.thecatapi.com/v1/favourites/${id}`, 'DELETE')
                         .then(data => {
-                            console.log(data);
                             catsDispatch(catDeleteFavorites(id));
                         })
                         .catch(() => catsDispatch(catsFetchingError()))
@@ -129,7 +152,6 @@ const CatsList: FC = (): ReactElement => {
 
         request<ICatsList[]>(`https://api.thecatapi.com/v1/favourites`)
             .then(data => {
-                console.log(data)
                 catsDispatch(catsFetchedFavorites(data))
             })
             .catch(() => catsDispatch(catsFetchingError()))
@@ -143,7 +165,7 @@ const CatsList: FC = (): ReactElement => {
 
         catsDispatch(catsClear());
 
-        request<ICatsList[]>(`https://api.thecatapi.com/v1/images/search?limit=${limit}&page=${page}&order=Desc`)
+        request<ICatsList[]>(`https://api.thecatapi.com/v1/images/search?limit=15&page=${currentPage}&order=Desc`)
             .then(data => catsDispatch(catsFetched(data)))
             .catch(() => catsDispatch(catsFetchingError()))
     }
@@ -160,9 +182,13 @@ const CatsList: FC = (): ReactElement => {
 
     return (
         <>
-            <HeaderMenu favoritesCats={favoritesCats} allCats={allCats} />
+            <ErrorBoundary>
+                <HeaderMenu favoritesCats={favoritesCats} allCats={allCats} />
+            </ErrorBoundary>
+            
             { spinnerStart }
             { catsStatusLoading !== 'error' ? catsPhoto :  errorMessage}
+            {fetching ? loading : ''}
         </>
     );
 };
