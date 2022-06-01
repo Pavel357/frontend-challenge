@@ -13,7 +13,7 @@ const HeaderMenu: FC<IFaveoritesCats> = ({favoritesCats, allCats}): ReactElement
         <header className='header-menu'>
             <div className="container">
                 <ul className="header-list">
-                    <li className="header-list__item header-list__item_all header-list__item_active" onClick={allCats}>
+                    <li className={`header-list__item header-list__item_all header-list__item_active`} onClick={allCats}>
                         <a href="#">Все котики</a>
                         </li>
                     <li className="header-list__item header-list__item_favorites" onClick={favoritesCats}>

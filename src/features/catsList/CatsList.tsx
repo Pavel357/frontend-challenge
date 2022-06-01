@@ -54,10 +54,15 @@ const CatsList: FC = (): ReactElement => {
     const scrollHandler = (): void => {
         if (document.body.offsetHeight - (window.scrollY + window.innerHeight) < 100 
         && catsList.length < totalCount) {
-            catsDispatch(fetchingTrue())
+            const menuFavorites = document.querySelector(`.header-list__item_favorites`);
+
+            if (!menuFavorites?.classList[2]) {
+                catsDispatch(fetchingTrue())
+            }
+
             setLoading(<SpinnerMore />)
         }
-    } 
+    }
 
     let spinnerStart: ReactElement = <></>;
     let errorMessage: ReactElement = <></>;
@@ -143,7 +148,7 @@ const CatsList: FC = (): ReactElement => {
     const favoritesCatsMenu = document.querySelector('.header-list__item_favorites');
 
     const favoritesCats = (): void => {
-        setFavorite(true);
+        setFavorite(false);
 
         allCatsMenu?.classList.remove('header-list__item_active');
         favoritesCatsMenu?.classList.add('header-list__item_active');
