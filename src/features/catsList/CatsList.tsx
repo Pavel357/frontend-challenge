@@ -148,7 +148,7 @@ const CatsList: FC = (): ReactElement => {
     const favoritesCatsMenu = document.querySelector('.header-list__item_favorites');
 
     const favoritesCats = (): void => {
-        setFavorite(false);
+        setFavorite(true);
 
         allCatsMenu?.classList.remove('header-list__item_active');
         favoritesCatsMenu?.classList.add('header-list__item_active');
