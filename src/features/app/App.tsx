@@ -10,6 +10,7 @@ const App: FC = (): ReactElement => {
         <HelmetProvider>
             <Helmet>
                 <title>Котики</title>
+                <p>xvxcvxcv</p>
             </Helmet>
             <Suspense fallback={<SpinnerStart />}>
                 <CatsList />
